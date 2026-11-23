@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EyeCare - Pelindung Kesehatan Mata & App Blocker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Tema Ramah Mata */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f7f4ed;
+            color: #2c3238;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 30px 20px;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* Navigasi Tab */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background-color: #eae5dc;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: #555e66;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: #1a1e22;
+        }
+
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #2e593c;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Konten Tab */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Kontainer */
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eae5dc;
+            margin-bottom: 24px;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1a1e22;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #606870;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1e22;
+        }
+
+        /* --- STYLING TAB 1: TIMER 20-20-20 --- */
+        .timer-wrapper {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .timer-display {
+            font-size: 4.5rem;
+            font-weight: 600;
+            color: #4a7c59;
+            margin: 20px 0;
+            letter-spacing: -1px;
+        }
+
+        .status-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            color: #3b444b;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: #4a7c59;
+            color: #ffffff;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #3b6347;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: #eae5dc;
+            color: #2c3238;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #dfd8cd;
+        }
+
+        /* Mode Istirahat Aktif */
+        body.resting {
+            background-color: #2b3a33;
+            color: #f7f4ed;
+        }
+
+        body.resting .nav-tabs {
+            background-color: #212d27;
+        }
+
+        body.resting .tab-btn {
+            color: #9cb0a6;
+        }
+
+        body.resting .tab-btn.active {
+            background-color: #34473e;
+            color: #f7f4ed;
+        }
+
+        body.resting .card {
+            background-color: #34473e;
+            border-color: #435b4f;
+        }
+
+        body.resting h1,
+        body.resting .status-text,
+        body.resting .card-title {
+            color: #f7f4ed;
+        }
+
+        body.resting .subtitle {
+            color: #b5c2bc;
+        }
+
+        body.resting .timer-display {
+            color: #a3c9b8;
+        }
+
+        /* --- STYLING TAB 2: APP BLOCKER --- */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 12px 14px;
+            border: 1px solid #dcd5c9;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background-color: #fcfbf9;
+            color: #2c3238;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"] {
+            flex: 2;
+            min-width: 200px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            min-width: 130px;
+        }
+
+        input:focus {
+            border-color: #4a7c59;
+        }
+
+        .block-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .block-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: #fcfbf9;
+            border: 1px solid #eae5dc;
+            border-radius: 10px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #1a1e22;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background-color: #e3efe7;
+            color: #2e593c;
+        }
+
+        .badge-blocked {
+            background-color: #f8e5e5;
+            color: #9e2a2b;
+        }
+
+        .item-limit {
+            font-size: 0.85rem;
+            color: #606870;
+        }
+
+        .progress-wrapper {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #eae5dc;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #4a7c59;
+            border-radius: 4px;
+        }
+
+        .progress-fill.danger {
+            background-color: #c94a4a;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc6ba;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4a7c59;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #8c939a;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .btn-delete:hover {
+            color: #c94a4a;
+            background-color: #f8e5e5;
+        }
+
+        /* Overlay Simulasi Layar Pemblokiran */
+        .block-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(34, 44, 39, 0.96);
+            color: #f7f4ed;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .block-overlay.show {
+            display: flex;
+        }
+
+        .overlay-content {
+            max-width: 450px;
+        }
+
+        .overlay-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: #a3c9b8;
+        }
+
+        .overlay-content p {
+            margin-bottom: 24px;
+            color: #dce3df;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navigasi Tab -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('timerTab', this)">Timer Kesehatan Mata</button>
+            <button class="tab-btn" onclick="switchTab('blockerTab', this)">Batas Waktu & Blokir</button>
+        </nav>
+
+        <!-- TAB 1: TIMER 20-20-20 -->
+        <div id="timerTab" class="tab-content active">
+            <div class="card timer-wrapper">
+                <h1>Aturan 20-20-20</h1>
+                <p class="subtitle">Setiap 20 menit menatap layar, alihkan pandangan sejauh 20 kaki selama 20 detik.</p>
+                
+                <div class="timer-display" id="timer">20:00</div>
+                <div class="status-text" id="statusText">Fokus bekerja. Waktu istirahat mata akan dimulai sebentar lagi.</div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" id="startBtn" onclick="toggleTimer()">Mulai</button>
+                    <button class="btn-secondary" onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: APP & WEB BLOCKER -->
+        <div id="blockerTab" class="tab-content">
+            <div class="card">
+                <h1>Batas Waktu & Pemblokir</h1>
+                <p class="subtitle">Batasi durasi penggunaan situs atau aplikasi agar mata tetap sehat dan fokus terjaga.</p>
+
+                <form class="input-group" onsubmit="addApp(event)">
+                    <input type="text" id="appName" placeholder="Nama aplikasi atau URL (cth: youtube.com)" required>
+                    <input type="number" id="appLimit" placeholder="Batas (menit/hari)" min="1" max="600" required>
+                    <button type="submit" class="btn-primary">+ Tambah</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h2 class="card-title" style="margin-bottom: 0;">Daftar Pembatasan Aktif</h2>
+                    <button onclick="simulateBlock()" style="background: #eae5dc; color: #2c3238; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500;">Simulasi Layar Blokir</button>
+                </div>
+                
+                <ul class="block-list" id="blockList">
+                    <li class="block-item">
+                        <div class="item-info">
+                            <div class="item-name">
+                                youtube.com
+                                <span class="badge badge-active">Dipantau</span>
+                            </div>
+                            <div class="item-limit">Terpakai: 35 mnt / Batas: 60 mnt</div>
+                        </div>
+                        <div class="progress-wrapper">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 58%;"></div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <button class="btn-delete" onclick="this.closest('.block-item').remove()">Hapus</button>
+                        </div>
+                    </li>
+
+                    <li class="block-item">
+                        <div class="item-info">
+                            <div class="item-name">
+                                instagram.com
+                                <span class="badge badge-blocked">Diblokir</span>
+                            </div>
+                            <div class="item-limit">Terpakai: 45 mnt / Batas: 45 mnt</div>
+                        </div>
+                        <div class="progress-wrapper">
+                            <div class="progress-bar">
+                                <div class="progress-fill danger" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <button class="btn-delete" onclick="this.closest('.block-item').remove()">Hapus</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay Layar Pemblokiran -->
+    <div class="block-overlay" id="blockOverlay">
+        <div class="overlay-content">
+            <h2>Batas Waktu Harian Tercapai</h2>
+            <p>Kamu sudah menggunakan aplikasi ini melewati batas waktu yang kamu tentukan sendiri. Saatnya mengistirahatkan mata dari layar!</p>
+            <button class="btn-primary" onclick="closeOverlay()">Mengerti, Saya Akan Istirahat</button>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIKA NAVIGASI TAB ---
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // --- LOGIKA TIMER 20-20-20 ---
+        let countdown;
+        let timeLeft = 20 * 60;
+        let isRunning = false;
+        let isResting = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const statusText = document.getElementById('statusText');
+        const startBtn = document.getElementById('startBtn');
+        const bodyTag = document.body;
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            timerDisplay.textContent = formatTime(timeLeft);
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(countdown);
+                startBtn.textContent = 'Lanjutkan';
+                isRunning = false;
+            } else {
+                isRunning = true;
+                startBtn.textContent = 'Jeda';
+                countdown = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        if (!isResting) {
+                            isResting = true;
+                            timeLeft = 20;
+                            bodyTag.classList.add('resting');
+                            statusText.textContent = 'Waktunya istirahat! Lihat objek sejauh 20 kaki (6 meter).';
+                        } else {
+                            isResting = false;
+                            timeLeft = 20 * 60;
+                            bodyTag.classList.remove('resting');
+                            statusText.textContent = 'Fokus bekerja kembali.';
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(countdown);
+            isRunning = false;
+            isResting = false;
+            timeLeft = 20 * 60;
+            bodyTag.classList.remove('resting');
+            startBtn.textContent = 'Mulai';
+            statusText.textContent = 'Fokus bekerja. Waktu istirahat mata akan dimulai sebentar lagi.';
+            updateDisplay();
+        }
+
+        // --- LOGIKA APP BLOCKER ---
+        function addApp(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('appName');
+            const limitInput = document.getElementById('appLimit');
+            const blockList = document.getElementById('blockList');
+
+            const li = document.createElement('li');
+            li.className = 'block-item';
+            li.innerHTML = `
+                <div class="item-info">
+                    <div class="item-name">
+                        ${nameInput.value}
+                        <span class="badge badge-active">Dipantau</span>
+                    </div>
+                    <div class="item-limit">Terpakai: 0 mnt / Batas: ${limitInput.value} mnt</div>
+                </div>
+                <div class="progress-wrapper">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <button class="btn-delete" onclick="this.closest('.block-item').remove()">Hapus</button>
+                </div>
+            `;
+
+            blockList.prepend(li);
+            nameInput.value = '';
+            limitInput.value = '';
+        }
+
+        function simulateBlock() {
+            document.getElementById('blockOverlay').classList.add('show');
+        }
+
+        function closeOverlay() {
+            document.getElementById('blockOverlay').classList.remove('show');
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
